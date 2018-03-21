@@ -2,10 +2,12 @@ from pymongo import MongoClient
 import pymongo
 import numpy as np
 import pandas as pd
+from geopy.geocoders import Nominatim
 
 client = MongoClient()
 db = client.devcoders
 population = db.population
+
 
 def process(cols):
 	a = int(cols[0])
@@ -21,6 +23,10 @@ def store(cols):
 	entry['State'] = str(cols[0])
 	entry['Constituency'] = str(cols[1])
 	entry['Total'] = int(cols[2])
+	locators = Nominatim()
+	location = locators.geocode(entry['Constituency'])
+	entry['Latitude'] = location.latitude
+	entry['Longitude'] = location.longitude
 	population.insert_one(entry)
 	return True
 
