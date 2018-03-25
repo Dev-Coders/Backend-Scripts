@@ -34,14 +34,15 @@ class Order(Resource):
 
 		nearestConstituency = areaFinder.ReturnConstituency(latitude,longitude)
 
-
 		order = {
 		'UserName':username,
 		'Latitude':latitude,
 		'Longitude':longitude,
 		'NearestConstituencyLatitude':nearestConstituency['Latitude'],
 		'NearestConstituencyLongitude':nearestConstituency['Longitude'],
-		'NearstConstituencyAddress':nearestConstituency['Address']
+		'NearstConstituencyAddress':nearestConstituency['Address'],
+		'NearstConstituencyDistance':nearestConstituency['Distance'],
+		'NearstConstituencyTime':nearestConstituency['Time']
 		}
 
 		orders.insert_one(order)

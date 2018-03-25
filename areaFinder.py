@@ -1,33 +1,83 @@
 import pandas as pd
-from geopy.distance import distance
+import googlemaps
+import private
+import pickle
+
+class Tree:
+    def __init__(self, node):
+        self.left = None
+        self.right = None
+        self.data = node
+
+
+def insert(root, val, flag):
+    if root == None:
+        return Tree(val)
+     
+    if val[flag+6] <= root.data[flag+6]:
+        root.left = insert(root.left, val, flag^1)
+    else:
+        root.right = insert(root.right, val, flag^1)
+    
+    return root
+
+def createSearchTree():
+        
+    root = None
+    data=pd.read_csv("delhi.csv",'$')
+    
+    node=()
+    for row in data.itertuples():
+        node = tuple(row)
+        root = insert(root, node, 0)
+       
+    main_root=root
+    return root
+
+
+def searchTree(root, location, flag):
+    
+    if location[flag] < root.data[flag+6]:
+        
+        if root.left==None:
+            return root 
+        return searchTree(root.left, location, flag^1)
+    
+    elif location[flag] > root.data[flag+6]:
+        
+        if root.right==None:
+            return root 
+        return searchTree(root.right, location, flag^1)
+    else:
+        return root
+
+def gmapDistance(loc1,loc2):
+    gmaps = googlemaps.Client(key=private.MapKey)
+
+    directions_result = gmaps.directions(loc1, loc2, mode="driving", avoid="ferries")
+
+    return (directions_result[0]['legs'][0]['distance']['text'],directions_result[0]['legs'][0]['duration']['text'])
+
 
 def ReturnConstituency(latitude, longitude):
-    
-    data = pd.read_csv("./delhi.csv", sep='$')
-    
-    b=False
-    x=0; addr=""
-    loc=()
-    
-    my_loc = (float(latitude), float(longitude))
-    for row in data.iterrows():
-        
-        temp_loc = (float(row[1]["Latitude"]), float(row[1]["Longitude"]))
-        dist = distance(my_loc,temp_loc).miles
-        
-        if not b:
-            loc=temp_loc
-            x=dist
-            addr=row[1]["Address"]
-            b=True
-        else:
-            if x>dist:
-                x=dist
-                loc=temp_loc
-                addr=row[1]["Address"]
-        
+
+    with open('tree.pickle', 'rb') as handle:
+       root = pickle.load(handle)
+
+    # data=pd.read_csv("delhi.csv",sep="$")
+
+    # for row in data.itertuples():
+    #     root=Tree(tuple(row))
+
+    node = searchTree(root, [float(latitude), float(longitude)], 0)
+
+
     ans={}
-    ans["Latitude"], ans["Longitude"]=loc
-    ans["Address"]=addr
-    
+
+    ans["Distance"],ans["Time"] = gmapDistance([node.data[6], node.data[7]],[latitude, longitude])
+
+    ans["Latitude"]=node.data[6]
+    ans["Longitude"]=node.data[7]
+    ans["Address"]=node.data[8]
+
     return ans
