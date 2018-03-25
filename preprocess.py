@@ -24,6 +24,7 @@ def store(cols):
 	population.insert_one(entry)
 	return True
 
+
 class PreProcess():
 
 	
@@ -37,3 +38,7 @@ class PreProcess():
 		#df.apply(store,axis=1)
 		population.remove()
 		population.insert(json.loads(df.to_json(orient='records')))
+
+
+
+
