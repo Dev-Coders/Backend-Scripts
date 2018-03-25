@@ -3,8 +3,8 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from pojo import PreProcessData
 from userorder import Order
 from user import User
-import areaFinder
-import pickle
+# import areaFinder
+# import pickle
 
 
 
@@ -13,10 +13,10 @@ api = Api(app)
 
 
 
-root=areaFinder.createSearchTree()
+# root=areaFinder.createSearchTree()
 
-with open('tree.pickle', 'wb') as handle:
-    pickle.dump(root, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('tree.pickle', 'wb') as handle:
+#     pickle.dump(root, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 #-----------FLASK----ROUTES----------
 
