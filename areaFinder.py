@@ -31,7 +31,6 @@ def createSearchTree():
         node = tuple(row)
         root = insert(root, node, 0)
        
-    main_root=root
     return root
 
 
@@ -41,13 +40,66 @@ def searchTree(root, location, flag):
         
         if root.left==None:
             return root 
-        return searchTree(root.left, location, flag^1)
+        
+        root_dis = vincenty(location, root.data[6:8]).miles
+        l_dis = vincenty(location, root.left.data[6:8]).miles
+        
+        #root_dis = gmaps.directions(location, root.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']
+        #l_dis = gmaps.directions(location, root.left.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']
+        
+        if l_dis < root_dis:
+            return searchTree(root.left, location, flag^1)
+        else:
+            left = root.left
+            right = root.right
+            
+            while left.right:
+                    left=left.right
+            if right:
+                while right.left:
+                    right=right.left
+                
+                #if gmaps.directions(location, left.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value'] < gmaps.directions(location, right.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']:
+                if vincenty(location, left.data[6:8]).miles < vincenty(location, right.data[6:8]).miles:
+                    return left
+                else:
+                    return right
+            
+            else:
+                return left
     
     elif location[flag] > root.data[flag+6]:
         
         if root.right==None:
             return root 
-        return searchTree(root.right, location, flag^1)
+        
+        root_dis = vincenty(location, root.data[6:8]).miles
+        r_dis = vincenty(location, root.right.data[6:8]).miles
+        
+        #root_dis = gmaps.directions(location, root.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']
+        #r_dis = gmaps.directions(location, root.right.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']
+        
+        if r_dis < root_dis:
+            return searchTree(root.right, location, flag^1)
+        else:
+            left = root.left
+            right = root.right
+            
+            while right.left:
+                    right=right.left
+            if left:
+                while left.right:
+                    left=left.right
+                
+                #if gmaps.directions(location, left.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value'] < gmaps.directions(location, right.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']:
+                if vincenty(location, left.data[6:8]).miles < vincenty(location, right.data[6:8]).miles:
+                    return left
+                else:
+                    return right
+            
+            else:
+                return right
+        
     else:
         return root
 
@@ -73,5 +125,6 @@ def ReturnConstituency(latitude, longitude):
     ans["Latitude"]=node.data[6]
     ans["Longitude"]=node.data[7]
     ans["Address"]=node.data[8]
+    ans["Name"]=node.data[4]
 
     return ans
