@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from pymongo import MongoClient
 import pymongo
 from bson import json_util
+import areaFinder
 
 '''
 Need to add authentication lateer!!
@@ -31,10 +32,18 @@ class Order(Resource):
 		latitude = request.json['Latitude']
 		longitude = request.json['Longitude']
 
+		nearestConstituency = areaFinder.ReturnConstituency(latitude,longitude)
+
 		order = {
 		'UserName':username,
 		'Latitude':latitude,
-		'Longitude':longitude
+		'Longitude':longitude,
+		'NearestConstituencyLatitude':nearestConstituency['Latitude'],
+		'NearestConstituencyLongitude':nearestConstituency['Longitude'],
+		'NearestConstituencyAddress':nearestConstituency['Address'],
+		'NearestConstituencyDistance':nearestConstituency['Distance'],
+		'NearestConstituencyTime':nearestConstituency['Time'],
+		'NearestConstituencyName':nearestConstituency['Name']
 		}
 
 		orders.insert_one(order)
