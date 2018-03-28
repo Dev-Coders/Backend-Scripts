@@ -40,9 +40,10 @@ class Order(Resource):
 		'Longitude':longitude,
 		'NearestConstituencyLatitude':nearestConstituency['Latitude'],
 		'NearestConstituencyLongitude':nearestConstituency['Longitude'],
-		'NearstConstituencyAddress':nearestConstituency['Address'],
-		'NearstConstituencyDistance':nearestConstituency['Distance'],
-		'NearstConstituencyTime':nearestConstituency['Time']
+		'NearestConstituencyAddress':nearestConstituency['Address'],
+		'NearestConstituencyDistance':nearestConstituency['Distance'],
+		'NearestConstituencyTime':nearestConstituency['Time'],
+		'NearestConstituencyName':nearestConstituency['Name']
 		}
 
 		orders.insert_one(order)
