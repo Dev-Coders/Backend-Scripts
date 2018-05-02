@@ -1,6 +1,8 @@
 import pandas as pd
 import googlemaps
 import private
+import pickle
+from geopy.distance import vincenty
 
 
 class Tree:
@@ -61,9 +63,15 @@ def searchTree(root, location, flag):
                 
                 #if gmaps.directions(location, left.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value'] < gmaps.directions(location, right.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']:
                 if vincenty(location, left.data[6:8]).miles < vincenty(location, right.data[6:8]).miles:
-                    return left
+                    if vincenty(location, left.data[6:8]).miles < vincenty(location, root.data[6:8]).miles:
+                        return left
+                    else:
+                        return root
                 else:
-                    return right
+                    if vincenty(location, right.data[6:8]).miles < vincenty(location, root.data[6:8]).miles:
+                        return right
+                    else:
+                        return root
             
             else:
                 return left
@@ -93,9 +101,15 @@ def searchTree(root, location, flag):
                 
                 #if gmaps.directions(location, left.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value'] < gmaps.directions(location, right.data[6:8], mode="driving", avoid="ferries")[0]['legs'][0]['distance']['value']:
                 if vincenty(location, left.data[6:8]).miles < vincenty(location, right.data[6:8]).miles:
-                    return left
+                    if vincenty(location, left.data[6:8]).miles < vincenty(location, root.data[6:8]).miles:
+                        return left
+                    else:
+                        return root
                 else:
-                    return right
+                    if vincenty(location, right.data[6:8]).miles < vincenty(location, root.data[6:8]).miles:
+                        return right
+                    else:
+                        return root
             
             else:
                 return right
