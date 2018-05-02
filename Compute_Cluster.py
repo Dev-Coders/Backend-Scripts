@@ -1,8 +1,7 @@
-import pandas as pd
-import googlemaps
-import private
 import pickle
-from geopy.distance import vincenty
+import os
+
+threshold = 4
 
 
 class Tree:
@@ -22,19 +21,6 @@ def insert(root, val, flag):
         root.right = insert(root.right, val, flag^1)
     
     return root
-
-def createSearchTree():
-        
-    root = None
-    data=pd.read_csv("new.csv",'$')
-    
-    node=()
-    for row in data.itertuples():
-        node = tuple(row)
-        root = insert(root, node, 0)
-       
-    return root
-
 
 def searchTree(root, location, flag):
     
@@ -80,11 +66,49 @@ def searchTree(root, location, flag):
     else:
         return root.data
 
-def ReturnConstituency(latitude, longitude):
+def find_closest_request(latitude, longitude, cluster_count):
 
-    with open('tree.pickle', 'rb') as handle:
+    with open('requests.pickle', 'rb') as handle:
         root = pickle.load(handle)
-
+        
+    if root == None:
+        root = insert(root, [latitude, longitude, cluster_count], 0)
+        pickle.dump(root, open("requests.pickle", "wb" ))
+        return [-1,-1]
+        
     node = searchTree(root, [latitude, longitude], 0)
+    
+    distance = ((node[0]-latitude)**2 + (node[1]-longitude)**2)**0.5
+    
+    if distance > threshold:
+        root = insert(root, [latitude, longitude, cluster_count], 0)
+    else:
+        root = insert(root, [latitude, longitude, node[2]], 0)
+        
+    return [distance, node[2]]
 
-    return node
+
+def adjust_clusters(latitude, longitude):
+    
+    cluster_count=0
+    for root, dirs, files, in os.walk("clusters"):
+        for cluster in files:
+            cluster_count+=1
+    
+    data = find_closest_request(latitude, longitude, cluster_count)
+    
+    if(data[0]==-1 or data[0] > threshold):
+        new_cluster = [[latitude, longitude]]
+        pickle.dump(new_cluster, open("clusters/cluster"+str(cluster_count)+".pickle", "wb" ))
+        
+        #return cluster_count
+    
+    else:
+        with open('clusters/cluster'+ str(data[1]) +'.pickle', 'rb') as handle:
+            cluster = pickle.load(handle)
+        cluster.append([latitude, longitude]) 
+        pickle.dump(cluster, open('clusters/cluster'+ str(data[1]) +'.pickle', "wb" ))
+        
+        #return data[1]
+
+adjust_clusters(10,20)
